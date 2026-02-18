@@ -1,0 +1,10 @@
+name = "TemporalLogic"
+version = "0.1.0"
+defaultTargets = ["temporallogic"]
+
+[[lean_lib]]
+name = "TemporalLogic"
+
+[[lean_exe]]
+name = "temporallogic"
+root = "Main"
