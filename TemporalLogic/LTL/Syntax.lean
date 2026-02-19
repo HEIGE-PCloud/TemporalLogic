@@ -39,11 +39,14 @@ declare_syntax_cat LTLFormula
 syntax ident : LTLFormula
 syntax str : LTLFormula
 syntax "true" : LTLFormula
+syntax "⊤" : LTLFormula
 syntax "¬" LTLFormula : LTLFormula
 syntax LTLFormula "∧" LTLFormula : LTLFormula
 syntax "X" LTLFormula : LTLFormula
 syntax LTLFormula "U" LTLFormula : LTLFormula
 syntax "(" LTLFormula ")" : LTLFormula
+macro "false" : LTLFormula => `(LTLFormula| ¬ true)
+macro "⊥" : LTLFormula => `(LTLFormula| ¬ true)
 macro l:LTLFormula "∨" r:LTLFormula : LTLFormula =>
   `(LTLFormula| ¬(¬($l) ∧ ¬($r)))
 macro l:LTLFormula "→" r:LTLFormula : LTLFormula =>
@@ -62,7 +65,7 @@ meta partial def elabLTL : Syntax → TermElabM Lean.Expr
   | `(LTLFormula| $s:str) => do
       let apName := s.getString
       mkAppM ``Formula.ap #[mkStrLit apName]
-  | `(LTLFormula| true) => mkAppM ``Formula.t #[]
+  | `(LTLFormula| true) | `(LTLFormula| ⊤) => mkAppM ``Formula.t #[]
   | `(LTLFormula| ¬$f) => do
       let fExpr ← elabLTL f
       mkAppM ``Formula.not #[fExpr]
@@ -89,6 +92,7 @@ example := [LTL| X ("x = 1")]
 example := [LTL| "x < 2" ∨ G("x = 1")]
 example := [LTL| X("x = 1" ∨ G X "x ≥ 3")]
 example := [LTL| X(true U "x = 1") → G("x = 1")]
+example := [LTL| false]
 end Meta
 
 end LTL.Syntax
