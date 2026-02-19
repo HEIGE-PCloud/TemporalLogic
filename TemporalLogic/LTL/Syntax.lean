@@ -18,11 +18,11 @@ def Formula.toString : Formula → String
   | t => "⊤"
   | not t => "⊥"
   | ap a => s!"({a})"
-  | and (not (and f1 (not f2))) (not (and f3 (not f4))) =>
+  | and e1@(not (and f1 (not f2))) e2@(not (and f3 (not f4))) =>
       if f1 == f4 && f2 == f3 then
         s!"({f1.toString} ↔ {f2.toString})"
       else
-        s!"(({f1.toString} → {f2.toString}) ∧ ({f3.toString} → {f4.toString}))"
+        s!"({e1.toString} ∧ ({e2.toString})"
   | not (and (not f1) (not f2)) => s!"({f1.toString} ∨ {f2.toString})"
   | not (and f1 (not f2)) => s!"({f1.toString} → {f2.toString})"
   | u t f => s!"(F {f.toString})"
@@ -100,8 +100,9 @@ def example2 := [LTL| "x < 2" ∨ G("x = 1")]
 def example3 := [LTL| X("x = 1" ∨ G X "x ≥ 3")]
 def example4 := [LTL| X(true U "x = 1") → G("x = 1")]
 def example5 := [LTL| false]
+def example6 := [LTL| true ↔ false]
 
-#eval example4
+#eval example6
 end
 end Meta
 
