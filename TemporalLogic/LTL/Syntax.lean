@@ -2,7 +2,7 @@ module
 
 public import Lean
 
-namespace LTL.Syntax
+namespace TemporalLogic.LTL.Syntax
 abbrev AP := String
 
 inductive Formula where
@@ -106,4 +106,4 @@ def example6 := [LTL| true ↔ false]
 end
 end Meta
 
-end LTL.Syntax
+end TemporalLogic.LTL.Syntax
