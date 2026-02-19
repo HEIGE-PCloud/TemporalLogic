@@ -12,18 +12,24 @@ inductive Formula where
   | and : Formula → Formula → Formula
   | x : Formula → Formula
   | u : Formula → Formula → Formula
+deriving BEq, DecidableEq
 
 def Formula.toString : Formula → String
-  | t => "true"
-  | not t => "false"
-  | ap a => a
+  | t => "⊤"
+  | not t => "⊥"
+  | ap a => s!"({a})"
+  | and (not (and f1 (not f2))) (not (and f3 (not f4))) =>
+      if f1 == f4 && f2 == f3 then
+        s!"({f1.toString} ↔ {f2.toString})"
+      else
+        s!"(({f1.toString} → {f2.toString}) ∧ ({f3.toString} → {f4.toString}))"
   | not (and (not f1) (not f2)) => s!"({f1.toString} ∨ {f2.toString})"
   | not (and f1 (not f2)) => s!"({f1.toString} → {f2.toString})"
-  | u t f => s!"F {f.toString}"
-  | not (u t (not f)) => s!"G {f.toString}"
-  | not f => s!"¬{f.toString}"
+  | u t f => s!"(F {f.toString})"
+  | not (u t (not f)) => s!"(G {f.toString})"
+  | not f => s!"(¬{f.toString})"
   | and f1 f2 => s!"({f1.toString} ∧ {f2.toString})"
-  | x f => s!"X {f.toString}"
+  | x f => s!"(X {f.toString})"
   | u f1 f2 => s!"({f1.toString} U {f2.toString})"
 
 instance : ToString Formula where
@@ -88,11 +94,15 @@ meta partial def elabLTL : Syntax → TermElabM Lean.Expr
 
 elab "[LTL|" f:LTLFormula "]" : term => elabLTL f
 
-example := [LTL| X ("x = 1")]
-example := [LTL| "x < 2" ∨ G("x = 1")]
-example := [LTL| X("x = 1" ∨ G X "x ≥ 3")]
-example := [LTL| X(true U "x = 1") → G("x = 1")]
-example := [LTL| false]
+section
+def example1 := [LTL| X ("x = 1")]
+def example2 := [LTL| "x < 2" ∨ G("x = 1")]
+def example3 := [LTL| X("x = 1" ∨ G X "x ≥ 3")]
+def example4 := [LTL| X(true U "x = 1") → G("x = 1")]
+def example5 := [LTL| false]
+
+#eval example4
+end
 end Meta
 
 end LTL.Syntax
