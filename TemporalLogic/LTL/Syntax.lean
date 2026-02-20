@@ -3,9 +3,9 @@ module
 public import Lean
 
 namespace TemporalLogic.LTL.Syntax
-abbrev AP := String
+public abbrev AP := String
 
-inductive Formula where
+public inductive Formula where
   | t : Formula
   | ap : AP → Formula
   | not : Formula → Formula
@@ -14,7 +14,7 @@ inductive Formula where
   | u : Formula → Formula → Formula
 deriving BEq, DecidableEq
 
-def Formula.toString : Formula → String
+public def Formula.toString : Formula → String
   | t => "⊤"
   | not t => "⊥"
   | ap a => s!"({a})"
@@ -42,29 +42,29 @@ open Lean Lean.Elab Lean.Meta
 
 declare_syntax_cat LTLFormula
 
-syntax ident : LTLFormula
-syntax str : LTLFormula
-syntax "true" : LTLFormula
-syntax "⊤" : LTLFormula
-syntax "¬" LTLFormula : LTLFormula
-syntax LTLFormula "∧" LTLFormula : LTLFormula
-syntax "X" LTLFormula : LTLFormula
-syntax LTLFormula "U" LTLFormula : LTLFormula
-syntax "(" LTLFormula ")" : LTLFormula
-macro "false" : LTLFormula => `(LTLFormula| ¬ true)
-macro "⊥" : LTLFormula => `(LTLFormula| ¬ true)
-macro l:LTLFormula "∨" r:LTLFormula : LTLFormula =>
+scoped syntax ident : LTLFormula
+scoped syntax str : LTLFormula
+scoped syntax "true" : LTLFormula
+scoped syntax "⊤" : LTLFormula
+scoped syntax "¬" LTLFormula : LTLFormula
+scoped syntax LTLFormula "∧" LTLFormula : LTLFormula
+scoped syntax "X" LTLFormula : LTLFormula
+scoped syntax LTLFormula "U" LTLFormula : LTLFormula
+scoped syntax "(" LTLFormula ")" : LTLFormula
+scoped macro "false" : LTLFormula => `(LTLFormula| ¬ true)
+scoped macro "⊥" : LTLFormula => `(LTLFormula| ¬ true)
+scoped macro l:LTLFormula "∨" r:LTLFormula : LTLFormula =>
   `(LTLFormula| ¬(¬($l) ∧ ¬($r)))
-macro l:LTLFormula "→" r:LTLFormula : LTLFormula =>
+scoped macro l:LTLFormula "→" r:LTLFormula : LTLFormula =>
   `(LTLFormula| ¬(($l) ∧ (¬($r))))
-macro l:LTLFormula "↔" r:LTLFormula : LTLFormula =>
+scoped macro l:LTLFormula "↔" r:LTLFormula : LTLFormula =>
   `(LTLFormula| (($l) → ($r)) ∧ (($r) → ($l)))
-macro "F" f:LTLFormula : LTLFormula =>
+scoped macro "F" f:LTLFormula : LTLFormula =>
   `(LTLFormula| (true U ($f)))
-macro "G" f:LTLFormula : LTLFormula =>
+scoped macro "G" f:LTLFormula : LTLFormula =>
   `(LTLFormula| ¬(true U ¬($f)))
 
-meta partial def elabLTL : Syntax → TermElabM Lean.Expr
+public meta partial def elabLTL : Syntax → TermElabM Lean.Expr
   | `(LTLFormula| $a:ident) => do
       let apName := a.getId.toString
       mkAppM ``Formula.ap #[mkStrLit apName]
